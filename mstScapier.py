@@ -1,9 +1,9 @@
-"""
+'''
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # MST - Mikhail Soloviev Tests
 # Copyright 2022 <mikhail.soloviov@mail.ru>
 # wrapper around scapy API to network L2/L3/.../L7 access
-"""
+'''
 from mstSettingsAndHelpers import *
 from scapy import config
 config.Conf.load_layers.remove("x509")  # this is a trick to allow any debug
@@ -22,10 +22,10 @@ def mstDiscoverIps(ipAddr=mstDefaultIP):
 
     for respRecord in listBroadcastResps:
         answer = respRecord[1]  # each response costans the original request [0] and the answer [1]
-        mstPrint(2, 'broadcast brought:', answer.summary())
+        mstPrint(3, 'broadcast brought:', answer.summary())
         answeredMAC=answer['Ether'].src
         answeredIP=answer['ARP'].psrc
-        mstPrint(1, f'mstDiscoverIps(): IP {answeredIP} at MAC {answeredMAC}')
+        mstPrint(2, f'mstDiscoverIps(): IP {answeredIP} at MAC {answeredMAC}')
         ret.append([answeredIP, answeredMAC])
     mstPrint(3, 'mstDiscoverIps() ended---')
     return ret
@@ -47,27 +47,27 @@ def mstNameResolveWithSnmp(ipAddr=mstDefaultIP):
     return ret
 
 def mstCheckIpPorts(ipAddr, ports):
-    ''' scans given port(s) on given address(es) using TCP; returns list of responded [IP, port] '''
+    ''' scans for port(s) opened on the address using TCP; returns positive responses [IP, port] '''
     mstPrint(3, 'mstCheckIpPorts() started---')
     ret = []
     # partReqEther = scapy.layers.l2.Ether(dst=mac, src='00:1c:b3:bc:6c:b6', type='IPv4')
-    partReqIP = scapy.all.IP(dst=ipAddr)
-    partReqTCP = scapy.all.TCP(dport=ports, flags="S")
+    partReqIP = scapy.layers.inet.IP(dst=ipAddr)
+    partReqTCP = scapy.layers.inet.TCP(dport=ports, flags="S")
     packPortReq = partReqIP/partReqTCP # TCP port open packet
     # Send L4 TCP packet(s); TODO: consider using L2 to avoid MAC resolving by scapy:
     listPortResps = scapy.sendrecv.sr(packPortReq, timeout=mstDefaultTimeout, retry=0)[0]
     if not listPortResps:
-        mstPrint(1, f'mstCheckIpPorts(): no response from {ipAddr}')
+        mstPrint(2, f'mstCheckIpPorts(): no response from {ipAddr}')
         ret = None
     else:
         for respRecord in listPortResps:
             answer = respRecord[1]  # each response costans the original request [0] and the answer [1]
             status = str(answer['TCP'].flags)
             if 'S' in status: # expect SYN bit among flags like 'SA'
-                mstPrint(2, 'RAW response:', answer.summary())
+                mstPrint(1, 'RAW response:', answer.summary())
                 remoteIP = answer['IP'].src
                 remotePortNumber = answer['TCP'].sport
-                mstPrint(1, f'mstCheckIpPorts(): got response from {remoteIP}:{remotePortNumber}')
+                mstPrint(2, f'mstCheckIpPorts(): got response from {remoteIP}:{remotePortNumber}')
                 ret.append([remoteIP, remotePortNumber])
     mstPrint(3, 'mstCheckIpPorts() ended---')
     return ret
@@ -75,5 +75,8 @@ def mstCheckIpPorts(ipAddr, ports):
 # Call examples; keep commented out:
 #mstDiscoverIps('192.168.1.1/30')
 #mstGetSnmpNameIPs('192.168.1.4')
-#mstCheckIpPorts('192.168.1.4', 21) # 'f4:6d:04:7e:76:18' '24:92:0e:ab:72:4c')
-#mstCheckIpPorts('192.168.1.12', (1, 1023))
+#
+#mstDiscoverIps('192.168.1.1')
+#mstCheckIpPorts('192.168.1.1', 80) # 'f4:6d:04:7e:76:18' '24:92:0e:ab:72:4c')
+
+#mstCheckIpPorts('192.168.1.1', (80, 90))
