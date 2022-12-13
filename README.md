@@ -8,11 +8,13 @@ Installation:
 - clone this repository:
 > https://github.com/mikkos2015/MST
 - Install Python v3.7 or higher
+> On linux you may need to allow Pyton network blocking read access:
+<br> "sudo setcap cap_net_raw=eip $(readlink -f $(which python3))"
 - Install these Python packages with pip:
 > scapy - Network access library
-<br> pytest - you may want to rewrite testing level on unitest
+<br> pytest - one may want to switch onto unitest
 <br> pytest-json-report - [OPIONAL] Stores test results in JSON format
 
 Typical execution command would be like below:
-> pytest -v mstTestSute1.py
-<br> pytest --json-report --json-report-file=myreport.json -v mstTestSute1.py
+> pytest -v mstTestSuiteOsiL2L3.py
+<br> pytest --json-report --json-report-file=TestRunReport.json -v mstTestSuiteOsiL2L3.py

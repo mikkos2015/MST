@@ -2,21 +2,22 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # MST - Mikhail Soloviev Tests
 # Copyright 2022 <mikhail.soloviov@mail.ru>
-# wrapper around scapy (enables network L2/L3/.../L7 access)
+# wrapper around scapy API to network L2/L3/.../L7 access
 """
 from mstSettingsAndHelpers import *
 from scapy import config
-config.Conf.load_layers.remove("x509")  # to allow any debug
+config.Conf.load_layers.remove("x509")  # this is a trick to allow any debug
 config.Conf.verb=mstDebugLevel          # scapy (default 2) messaging is prety the same to MST
 from scapy.all import *
 
 def mstDiscoverIps(ipAddr=mstDefaultIP):
+    ''' discovers given address(es) using ARP (Address Resolve Protocol); returns list of [IP, MAC] '''
     mstPrint(3, 'mstDiscoverIps() started---')
     ret = []
     partReqEther = scapy.layers.l2.Ether(dst=mstMACBroadcastAddress)
     partReqARP = scapy.layers.l2.ARP(pdst=ipAddr)
-    packBroadcastReq = partReqEther/partReqARP # Address Resolve Protocol broadcast packet
-    # Send L2 ARP packets; ignore unansered requests from [1]:
+    packBroadcastReq = partReqEther/partReqARP # broadcast packet
+    # Send L2 ARP packets; unansered requests from [1] ignored:
     listBroadcastResps = scapy.sendrecv.srp(packBroadcastReq, timeout=mstDefaultTimeout)[0]
 
     for respRecord in listBroadcastResps:
@@ -30,28 +31,30 @@ def mstDiscoverIps(ipAddr=mstDefaultIP):
     return ret
 
 def mstNameResolveWithSnmp(ipAddr=mstDefaultIP):
+    ''' TODO: DRAFT and needed rework as SNMP has issues '''
     mstPrint(3, 'mstNameResolveWithSnmp() started---')
     ret = ''
-    p1 = scapy.layers.inet.IP(dst="192.168.1.4")
+    p1 = scapy.layers.inet.IP(dst=ipAddr)
     p2 = scapy.layers.inet.UDP(sport=161)
-    p3 = scapy.layers.snmp.SNMP(community="public",
+    p3 = scapy.layers.snmp.SNMP(community='public',
         PDU=scapy.layers.snmp.SNMPget(
             varbindlist=[scapy.layers.snmp.SNMPvarbind(oid=ASN1_OID("1.3.6.1.2.1.1.5.0"))]))
     p = p1/p2/p3
     r = sr1(p)
     mstPrint(2, 'Summary:', r.summary())
-    # TODO: implement result parsing; ATM I do not have SNMP aware devices to implement details
+    # TODO: implement result parsing; ATM I do not have plenty SNMP aware devices to implement details
     mstPrint(3, 'mstNameResolveWithSnmp() ended---')
     return ret
 
 def mstCheckIpPorts(ipAddr, ports):
+    ''' scans given port(s) on given address(es) using TCP; returns list of responded [IP, port] '''
     mstPrint(3, 'mstCheckIpPorts() started---')
     ret = []
     # partReqEther = scapy.layers.l2.Ether(dst=mac, src='00:1c:b3:bc:6c:b6', type='IPv4')
     partReqIP = scapy.all.IP(dst=ipAddr)
     partReqTCP = scapy.all.TCP(dport=ports, flags="S")
     packPortReq = partReqIP/partReqTCP # TCP port open packet
-    # Send L4 TCP packet(s); use L2 send to avoid MAC resolving:
+    # Send L4 TCP packet(s); TODO: consider using L2 to avoid MAC resolving by scapy:
     listPortResps = scapy.sendrecv.sr(packPortReq, timeout=mstDefaultTimeout, retry=0)[0]
     if not listPortResps:
         mstPrint(1, f'mstCheckIpPorts(): no response from {ipAddr}')

@@ -2,15 +2,13 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # MST - Mikhail Soloviev Tests
 # Copyright 2022 <mikhail.soloviov@mail.ru>
-# OSI Level 2 access functions used in MST
+# Network access functions used in MST
 """
 from mstSettingsAndHelpers import *
 from mstScapier import *
 
-"""
-OSI Level2 operation: Broadcast Ethernet network collecting responded MACs and IPs
-"""
 def mstOsiLevel2BroadcastDiscovery():
+    ''' OSI Level 2 operation: Broadcast Ethernet network; returns list of responded [IP, MAC] '''
     mstPrint(3, "mstOsiLevel2BroadcastDiscovery start ------")
     ret = []
     ipRange = mstDefaultIP + '/' + str(mstDefaultIPMask) # e.g. '192.168.1.4/30'

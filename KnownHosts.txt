@@ -5,4 +5,5 @@
 192.168.1.6 26:a3:90:15:3f:3d A52-pol-zovatela-Elena
 192.168.1.8 52:36:93:27:bb:3f Galaxy-A41-pol-zovatela-Pavel
 192.168.1.11 00:1c:b3:bc:6c:b6 MacBookWin7
-192.168.1.12 70:4d:7b:62:58:76 MSoU22
+192.168.1.12 70:4d:7b:62:58:76 MSoU22, MSoWin10
+192.168.1.13 00:13:e8:1d:8c:c1 MSoWin7
