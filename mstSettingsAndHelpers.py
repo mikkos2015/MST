@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # MST - Mikhail Soloviev Tests
 # Copyright 2022 <mikhail.soloviov@mail.ru>
-# default values and helpers needed for MST
+# default values and helper functions needed for MST
 '''
 mstDefaultIP = '192.168.1.1'        # default network IP address
 mstDefaultIPLast = '-20'            # limits a range by last address, e.g. 192.168.1.1-20 (20 addresses)
@@ -11,6 +11,8 @@ mstMACBroadcastAddress = 'ff:ff:ff:ff:ff:ff'    # Ethernet MAC broadcast mask
 mstDefaultTimeout = 6.6             # seconds to wait for network reponses
 mstDebugMaxLevel = 3                # debug messaging and logging maximum details level
 mstDebugLevel = mstDebugMaxLevel    # debug messaging and logging level 0 to maximum
+mstDefaultPingText = 'Je n\'ai pas mangé pendant six jours'
+mstEmptyPingText = '*an*empty*string*'
 
 def mstPrint(level, line1, line2='', line3='', line4=''):
     ''' helper function: prints only when the requested details level is not worst than mstDebugLevel '''

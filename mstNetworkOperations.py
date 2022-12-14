@@ -22,6 +22,19 @@ def mstOsiL2_BroadcastDiscovery():
     mstPrint(3, 'mstOsiL2_BroadcastDiscovery end ------')
     return ret
 
+def mstOsiL3_PingIp(host, text=''):
+    ''' OSI Level 3 operation: Scan given port(s) on the host; returns list of responded [IP, port] '''
+    executor = mstOsiL3_PingIp.__name__
+    ret = None
+    if not host:
+        mstPrint(1, f'{executor} ERROR: No host provided')
+    else:
+        mstPrint(2, f'{executor} pinging: {host}')
+        ret = mstIcmpPing(host, text)
+        if ret:
+            mstPrint(3, f'{executor} result: {host} returned {ret}')
+    return ret
+
 def mstOsiL4_ScanPorts(host, portRange):
     ''' OSI Level 4 operation: Scan given port(s) on the host; returns list of responded [IP, port] '''
     mstPrint(3, f'{mstOsiL4_ScanPorts.__name__} start ------')
@@ -39,3 +52,4 @@ def mstOsiL4_ScanPorts(host, portRange):
 # Call examples; keep commented out:
 #mstOsiL2_BroadcastDiscovery()
 #mstOsiL4_ScanPorts('192.168.1.1', (80, 80))
+#mstOsiL3_PingIp('192.168.1.1')

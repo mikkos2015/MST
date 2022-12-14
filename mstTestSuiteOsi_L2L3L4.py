@@ -49,6 +49,18 @@ def test_L2_BroadcastReturnsOnlyKnownHosts():
             mstPrint(2, 'TEST ERROR: unexpected host', record)
         assert res
 
+def test_L3_HostsRespondOnPing():
+    ''' Check that all alive hosts respond to Ping request '''
+    assert pytest.mstAliveHosts # sanity check
+    openPorts = []
+    for host in pytest.mstAliveHosts:
+        res = mstOsiL3_PingIp(host[0], mstDefaultPingText)
+        assert res
+        if res:
+            assert res == mstDefaultPingText
+        else:
+            mstPrint(2, 'TEST ERROR: no ping response from', host)
+
 def test_L4_FindOpenedPorts():
     ''' Find network ports that and listening for incoming connections should bring some '''
     assert pytest.mstAliveHosts # sanity check
@@ -83,3 +95,4 @@ def Rest_FailingJustForDemonstration():
 #init: test_LoadTestDatasets(); test_L2_BroadcastDiscovery()
 #test_L2_BroadcastReturnsOnlyKnownHosts()
 #test_L4_FindOpenedPorts(); test_L4_OpenedPortsAreAllAllowed()
+#test_L3_HostsRespondOnPing()

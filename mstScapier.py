@@ -30,6 +30,35 @@ def mstDiscoverIps(ipAddr=mstDefaultIP):
     mstPrint(3, 'mstDiscoverIps() ended---')
     return ret
 
+def mstIcmpPing(ipAddr=mstDefaultIP, text='dummy'):
+    ''' sends default Ping Echo Request using ICMP (Internet Control Message Protocol);
+        returns response text or mstEmptyPingText or None '''
+    mstPrint(3, f'{mstIcmpPing.__name__} started---')
+    ret = None
+    if isinstance(text, str):
+        echoBinText = text.encode('utf-8')
+    else:
+        mstPrint(2, 'Wrong ping text provided, using default')
+        echoBinText = mstDefaultPingText.encode('utf-8')
+    partReqIp = scapy.layers.inet.IP(dst=ipAddr)
+    partReqIcmp = scapy.layers.inet.ICMP(type=8)
+    partRawReq = scapy.packet.Raw(load=echoBinText)
+    packPingReq = partReqIp/partReqIcmp/partRawReq # broadcast packet
+    # Send L2 ARP packets; unansered requests from [1] ignored:
+    listPingResps = scapy.sendrecv.sr(packPingReq, timeout=mstDefaultTimeout, retry=0)[0]
+
+    if listPingResps:
+        answer = listPingResps[0][1] # 0 - correct resps, 1 - answer
+        mstPrint(3, 'Ping response:', answer.summary())
+        ret = mstEmptyPingText
+        rawLayer = answer.getlayer(Raw)
+        if rawLayer:
+            rawData = rawLayer.load
+            if isinstance(rawData, bytes):
+                ret = rawData.decode('utf-8')
+    mstPrint(3, f'{mstIcmpPing.__name__} ended---')
+    return ret
+
 def mstNameResolveWithSnmp(ipAddr=mstDefaultIP):
     ''' TODO: DRAFT and needed rework as SNMP has issues '''
     mstPrint(3, 'mstNameResolveWithSnmp() started---')
@@ -78,5 +107,6 @@ def mstCheckIpPorts(ipAddr, ports):
 #
 #mstDiscoverIps('192.168.1.1')
 #mstCheckIpPorts('192.168.1.1', 80) # 'f4:6d:04:7e:76:18' '24:92:0e:ab:72:4c')
-
+#
 #mstCheckIpPorts('192.168.1.1', (80, 90))
+#mstIcmpPing('192.168.1.1','abc')
