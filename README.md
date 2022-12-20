@@ -17,5 +17,6 @@ Copyright 2022 Mikhail Soloviev <mikhail.soloviov@mail.ru>
 - - pytest-json-report - [OPIONAL] Stores test results in JSON format
 
 **Typical execution command would be like below**:
-- `pytest -v mstTestSuiteOsi_L2L3L4.py`
-- `pytest --json-report --json-report-file=TestRunReport.json -v mstTestSuiteOsi_L2L3L4.py`
+- `pytest -v mstPytest_Osi_L2L3L4.py`
+- `pytest --json-report --json-report-file=PytestRunReport.json -v mstPytest_Osi_L2L3L4.py`
+- `python mstUnittest_Osi_L2.py`

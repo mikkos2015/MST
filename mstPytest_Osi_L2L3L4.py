@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: LGPL-3.0-or-later
 # MST - Mikhail Soloviev Tests
 # Copyright 2022 <mikhail.soloviov@mail.ru>
-# pytest Suite enabled tests for TBA
+# pytest test suite for LAN at OSI Level 2, 3, 4+
 '''
 import pytest
 from mstNetworkOperations import *
@@ -92,7 +92,9 @@ def Rest_FailingJustForDemonstration():
     assert 11 == 22
 
 # Call examples; keep commented out:
-#init: test_LoadTestDatasets(); test_L2_BroadcastDiscovery()
-#test_L2_BroadcastReturnsOnlyKnownHosts()
+if __name__ == '__main__':
+#init: 
+    test_LoadTestDatasets(); test_L2_BroadcastDiscovery()
+    test_L2_BroadcastReturnsOnlyKnownHosts()
 #test_L4_FindOpenedPorts(); test_L4_OpenedPortsAreAllAllowed()
 #test_L3_HostsRespondOnPing()
